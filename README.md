@@ -1,58 +1,105 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```markdown
+![Laravel](https://img.shields.io/badge/laravel-%23FF2D20.svg?style=for-the-badge&logo=laravel&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+# 🚀 Laravel x Docker Sail (Arch Linux Setup)
 
-## Contributing
+Dokumentasi instalasi dan konfigurasi pengembangan Laravel menggunakan **Docker Sail** pada sistem operasi berbasis Arch Linux / CachyOS dengan **Fish Shell**.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🛠 1. Konfigurasi Awal Sistem
+Pastikan Docker terinstall dan user kamu memiliki izin akses tanpa `sudo`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# Update & Install Docker
+sudo pacman -Syu docker docker-compose github-cli
 
-## Security Vulnerabilities
+# Jalankan & Aktifkan Service
+sudo systemctl enable --now docker
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Pengaturan User Group
+sudo groupadd docker
+sudo usermod -aG docker $USER
+```
+***Catatan:*** Lakukan `reboot` sistem setelah menjalankan perintah di atas agar perubahan grup user tersinkronisasi sepenuhnya.
 
-## License
+## 🏗 2. Instalasi Laravel
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Gunakan skrip `curl` resmi Laravel untuk membangun lingkungan awal.
+```bash
+curl -s "[https://laravel.build/nama-proyek](https://laravel.build/nama-proyek)" | bash
+cd nama-proyek
+```
+
+## 🐟 3. Konfigurasi Fish Shell (Alias Sail)
+
+Agar pemanggilan perintah lebih efisien pada `Fish Shell`, buat fungsi alias permanen:
+```bash
+# Membuat alias
+alias sail='[ -f sail ] && sh sail; or sh vendor/bin/sail'
+
+# Menyimpan alias agar permanen
+funcsave sail
+```
+Sekarang kamu cukup mengetik sail (contoh: sail up) di terminal.
+
+## 🐳 4. Manajemen Kontainer & Database
+
+Menjalankan Layanan
+`sail up -d`
+Akses aplikasi melalui: <a href="http://localhost">http://localhost</a>
+
+Konfigurasi phpMyAdmin
+
+Tambahkan blok kode ini di dalam file `compose.yaml` pada bagian `services:` untuk akses GUI Database:
+```yaml
+phpmyadmin:
+    image: 'phpmyadmin:latest'
+    ports:
+        - '8080:80'
+    networks:
+        - sail
+    environment:
+        PMA_ARBITRARY: 1
+        PMA_HOST: mysql
+        PMA_USER: root
+        PMA_PASSWORD: '${DB_PASSWORD}'
+    depends_on:
+        - mysql
+```
+Akses phpMyAdmin melalui: <a href="http://localhost:8080"> http://localhost:8080 </a>
+Inisialisasi Database
+```bash
+sail artisan migrate
+```
+## 🐙 5. Integrasi GitHub
+
+Gunakan GitHub CLI untuk sinkronisasi proyek ke repository remote.
+```bash
+# Login ke GitHub
+gh auth login
+
+# Inisialisasi Git Lokal
+git init
+git add .
+git commit -m "Initial commit: Laravel Sail on Arch Linux"
+
+# Buat Repository & Push
+gh repo create nama-proyek --public --source=. --remote=origin --push
+```
+
+## 📋 6. Cheat Sheet Perintah Penting
+
+| Perintah | Deskripsi |
+| :--- | :--- |
+| `sail up -d` | Menjalankan kontainer di background. |
+| `sail stop` | Menghentikan kontainer sementara. |
+| `sail down` | Mematikan kontainer & menghapus network. |
+| `sail artisan ...` | Menjalankan perintah Artisan Laravel. |
+| `sail composer ...` | Menjalankan perintah PHP Composer. |
+| `sail npm run dev` | Menjalankan Vite untuk aset frontend. |
+| `sail shell` | Masuk ke terminal di dalam kontainer. |
+| `docker stats` | Memantau penggunaan resource (RAM/CPU). |
