@@ -70,7 +70,9 @@ phpmyadmin:
     depends_on:
         - mysql
 ```
-Akses phpMyAdmin melalui: <a href="http://localhost:8080"> http://localhost:8080 </a> <b>
+
+Akses phpMyAdmin melalui: <a href="http://localhost:8080"> http://localhost:8080 </a> 
+<br>
 Inisialisasi Database
 ```bash
 sail artisan migrate
