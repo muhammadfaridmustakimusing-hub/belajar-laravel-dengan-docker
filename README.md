@@ -52,7 +52,7 @@ Menjalankan Layanan
 `sail up -d`
 Akses aplikasi melalui: <a href="http://localhost">http://localhost</a>
 
-Konfigurasi phpMyAdmin
+### Konfigurasi phpMyAdmin
 
 Tambahkan blok kode ini di dalam file `compose.yaml` pada bagian `services:` untuk akses GUI Database:
 ```yaml
@@ -71,9 +71,8 @@ phpmyadmin:
         - mysql
 ```
 
-Akses phpMyAdmin melalui: <a href="http://localhost:8080"> http://localhost:8080 </a> 
-<br>
-Inisialisasi Database
+Akses phpMyAdmin melalui: <a href="http://localhost:8080"> http://localhost:8080 </a> <br>
+### Inisialisasi Database
 ```bash
 sail artisan migrate
 ```
